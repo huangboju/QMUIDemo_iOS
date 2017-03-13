@@ -992,8 +992,13 @@ const CGFloat QMUIGhostButtonCornerRadiusAdjustsBounds = -1;
     if (self.cornerRadius != QMUIGhostButtonCornerRadiusAdjustsBounds) {
         self.layer.cornerRadius = self.cornerRadius;
     } else {
-        self.layer.cornerRadius = flatf(CGRectGetHeight(self.bounds) / 2);
+        self.layer.cornerRadius = flat(CGRectGetHeight(self.bounds) / 2);
     }
+}
+
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+    _cornerRadius = cornerRadius;
+    [self setNeedsLayout];
 }
 
 @end
@@ -1137,8 +1142,13 @@ const CGFloat QMUIFillButtonCornerRadiusAdjustsBounds = -1;
     if (self.cornerRadius != QMUIFillButtonCornerRadiusAdjustsBounds) {
         self.layer.cornerRadius = self.cornerRadius;
     } else {
-        self.layer.cornerRadius = flatf(CGRectGetHeight(self.bounds) / 2);
+        self.layer.cornerRadius = flat(CGRectGetHeight(self.bounds) / 2);
     }
+}
+
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+    _cornerRadius = cornerRadius;
+    [self setNeedsLayout];
 }
 
 @end
