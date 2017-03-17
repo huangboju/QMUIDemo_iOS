@@ -60,7 +60,7 @@
     
 #pragma mark - UIControl
     
-    //- QMUICMI.controlDisabledAlpha = 0.5f;                                                    // UIControlHighlightedAlpha : 全局的highlighted alpha值
+    //- QMUICMI.controlHighlightedAlpha = 0.5f;                                                 // UIControlHighlightedAlpha : 全局的highlighted alpha值
     //- QMUICMI.controlDisabledAlpha = 0.5f;                                                    // UIControlDisabledAlpha : 全局的disabled alpha值
     
     QMUICMI.segmentTextTintColor = UIColorBlue;                                             // SegmentTextTintColor : segment的tintColor
@@ -106,8 +106,6 @@
     QMUICMI.navBarShadowImage = [UIImage new];                                                // NavBarShadowImage
     //- QMUICMI.navBarBarTintColor = nil;                                               // NavBarBarTintColor
     QMUICMI.navBarTintColor = UIColorWhite;                                         // NavBarTintColor
-    //- QMUICMI.navBarTintColorHighlighted = [NavBarTintColor colorWithAlphaComponent:NavBarHighlightedAlpha];          // NavBarTintColorHighlighted
-    //- QMUICMI.navBarTintColorDisabled = [NavBarTintColor colorWithAlphaComponent:NavBarDisabledAlpha];                // NavBarTintColorDisabled
     QMUICMI.navBarTitleColor = NavBarTintColor;                                     // NavBarTitleColor
     //- QMUICMI.navBarTitleFont = UIFontBoldMake(17);                                   // NavBarTitleFont
     //- QMUICMI.navBarBackButtonTitlePositionAdjustment = UIOffsetZero;                 // NavBarBarBackButtonTitlePositionAdjustment
