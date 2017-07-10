@@ -7,9 +7,7 @@
 //
 
 #import "UIImage+QMUI.h"
-#import "QMUICommonDefines.h"
-#import "QMUIConfigurationMacros.h"
-#import "QMUIHelper.h"
+#import "QMUICore.h"
 #import "UIBezierPath+QMUI.h"
 #import "UIColor+QMUI.h"
 #import <Accelerate/Accelerate.h>
@@ -127,6 +125,19 @@ CGSizeFlatSpecificScale(CGSize size, float scale) {
     UIImage *imageOut = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return imageOut;
+}
+
+- (UIImage *)qmui_imageWithBlendColor:(UIColor *)blendColor {
+    UIImage *coloredImage = [self qmui_imageWithTintColor:blendColor];
+    CIFilter *filter = [CIFilter filterWithName:@"CIColorBlendMode"];
+    [filter setValue:[CIImage imageWithCGImage:self.CGImage] forKey:kCIInputBackgroundImageKey];
+    [filter setValue:[CIImage imageWithCGImage:coloredImage.CGImage] forKey:kCIInputImageKey];
+    CIImage *outputImage = filter.outputImage;
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CGImageRef imageRef = [context createCGImage:outputImage fromRect:outputImage.extent];
+    UIImage *resultImage = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:self.imageOrientation];
+    CGImageRelease(imageRef);
+    return resultImage;
 }
 
 - (UIImage *)qmui_imageWithImageAbove:(UIImage *)image atPoint:(CGPoint)point {
@@ -472,7 +483,7 @@ CGSizeFlatSpecificScale(CGSize size, float scale) {
     CGContextInspectSize(size);
     
     UIImage *resultImage = nil;
-    tintColor = tintColor ? tintColor : UIColorWhite;
+    tintColor = tintColor ? : [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
     
     
     UIGraphicsBeginImageContextWithOptions(size, NO, 0);
@@ -504,8 +515,8 @@ CGSizeFlatSpecificScale(CGSize size, float scale) {
         }
             break;
         case QMUIImageShapeDisclosureIndicator: {
-            path = [UIBezierPath bezierPath];
             drawByStroke = YES;
+            path = [UIBezierPath bezierPath];
             path.lineWidth = lineWidth;
             [path moveToPoint:CGPointMake(drawOffset, drawOffset)];
             [path addLineToPoint:CGPointMake(size.width - drawOffset, size.height / 2)];
@@ -522,6 +533,12 @@ CGSizeFlatSpecificScale(CGSize size, float scale) {
             [path addLineToPoint:CGPointMake(size.width / 3, size.height - lineWidth / sin(lineAngle))];
             [path addLineToPoint:CGPointMake(lineWidth * sin(lineAngle), size.height / 2 - lineWidth * sin(lineAngle))];
             [path closePath];
+        }
+            break;
+        case QMUIImageShapeDetailButtonImage: {
+            drawByStroke = YES;
+            path = [UIBezierPath bezierPathWithOvalInRect:CGRectInset(CGRectMakeWithSize(size), drawOffset, drawOffset)];
+            path.lineWidth = lineWidth;
         }
             break;
         case QMUIImageShapeNavClose: {
@@ -549,6 +566,14 @@ CGSizeFlatSpecificScale(CGSize size, float scale) {
         [path fill];
     }
     
+    if (shape == QMUIImageShapeDetailButtonImage) {
+        CGFloat fontPointSize = flat(size.height * 0.8);
+        UIFont *font = [UIFont fontWithName:@"Georgia" size:fontPointSize];
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"i" attributes:@{NSFontAttributeName: font, NSForegroundColorAttributeName: tintColor}];
+        CGSize stringSize = [string boundingRectWithSize:size options:NSStringDrawingUsesFontLeading context:nil].size;
+        [string drawAtPoint:CGPointMake(CGFloatGetCenter(size.width, stringSize.width), CGFloatGetCenter(size.height, stringSize.height))];
+    }
+    
     resultImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
@@ -566,6 +591,9 @@ CGSizeFlatSpecificScale(CGSize size, float scale) {
             break;
         case QMUIImageShapeCheckmark:
             lineWidth = 1.5f;
+            break;
+        case QMUIImageShapeDetailButtonImage:
+            lineWidth = 1.0f;
             break;
         case QMUIImageShapeNavClose:
             lineWidth = 1.2f;   // 取消icon默认的lineWidth

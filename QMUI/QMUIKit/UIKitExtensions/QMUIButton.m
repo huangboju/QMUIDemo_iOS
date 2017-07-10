@@ -7,8 +7,7 @@
 //
 
 #import "QMUIButton.h"
-#import "QMUICommonDefines.h"
-#import "QMUIConfigurationMacros.h"
+#import "QMUICore.h"
 #import "QMUICommonViewController.h"
 #import "QMUINavigationController.h"
 #import "UIImage+QMUI.h"
@@ -34,6 +33,14 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         [self didInitialized];
+        
+        self.tintColor = ButtonTintColor;
+        if (!self.adjustsTitleTintColorAutomatically) {
+            [self setTitleColor:self.tintColor forState:UIControlStateNormal];
+        }
+        
+        // iOS7以后的button，sizeToFit后默认会自带一个上下的contentInsets，为了保证按钮大小即为内容大小，这里直接去掉，改为一个最小的值。
+        self.contentEdgeInsets = UIEdgeInsetsMake(CGFLOAT_MIN, 0, CGFLOAT_MIN, 0);
     }
     return self;
 }
@@ -48,20 +55,12 @@
 - (void)didInitialized {
     self.adjustsTitleTintColorAutomatically = NO;
     self.adjustsImageTintColorAutomatically = NO;
-    self.tintColor = ButtonTintColor;
-    if (!self.adjustsTitleTintColorAutomatically) {
-        [self setTitleColor:self.tintColor forState:UIControlStateNormal];
-    }
     
     // 默认接管highlighted和disabled的表现，去掉系统默认的表现
     self.adjustsImageWhenHighlighted = NO;
     self.adjustsImageWhenDisabled = NO;
     self.adjustsButtonWhenHighlighted = YES;
     self.adjustsButtonWhenDisabled = YES;
-    
-    // iOS7以后的button，sizeToFit后默认会自带一个上下的contentInsets，为了保证按钮大小即为内容大小，这里直接去掉，改为一个最小的值。
-    // 不能设为0，否则无效；也不能设置为小数点，否则无法像素对齐
-    self.contentEdgeInsets = UIEdgeInsetsMake(1, 0, 1, 0);
     
     // 图片默认在按钮左边，与系统UIButton保持一致
     self.imagePosition = QMUIButtonImagePositionLeft;
@@ -165,6 +164,8 @@
                 titleFrame = CGRectSetX(titleFrame, self.contentEdgeInsets.left + self.titleEdgeInsets.left);
                 titleFrame = CGRectSetWidth(titleFrame, titleLimitSize.width);
                 break;
+            default:
+                break;
         }
         
         if (self.imagePosition == QMUIButtonImagePositionTop) {
@@ -253,6 +254,8 @@
                 imageFrame = CGRectSetX(imageFrame, CGRectGetWidth(self.bounds) - self.contentEdgeInsets.right - self.imageEdgeInsets.right - CGRectGetWidth(imageFrame));
                 titleFrame = CGRectSetX(titleFrame, self.contentEdgeInsets.left + self.titleEdgeInsets.left);
                 titleFrame = CGRectSetWidth(titleFrame, CGRectGetMinX(imageFrame) - self.imageEdgeInsets.left - self.titleEdgeInsets.right - CGRectGetMinX(titleFrame));
+                break;
+            default:
                 break;
         }
         
@@ -900,7 +903,6 @@
 
 - (void)didInitialized {
     [super didInitialized];
-    [self setTitleColor:ButtonTintColor forState:UIControlStateNormal];
     
     self.underlineLayer = [CALayer layer];
     [self.underlineLayer qmui_removeDefaultAnimations];

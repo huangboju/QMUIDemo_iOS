@@ -8,37 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class QMUIToastView;
 @class QMUIToastAnimator;
-
-
-/**
- * `QMUIToastViewDelegate`用来实现QMUIToastView显示和隐藏整个生命周期的回调。
- */
-@protocol QMUIToastViewDelegate <NSObject>
-
-/**
- * 即将要显示toastView
- */
-- (void)toastView:(QMUIToastView *)toastView willShowInView:(UIView *)view;
-
-/**
- * 已经显示toastView
- */
-- (void)toastView:(QMUIToastView *)toastView didShowInView:(UIView *)view;
-
-/**
- * 即将要隐藏toastView
- */
-- (void)toastView:(QMUIToastView *)toastView willHideInView:(UIView *)view;
-
-/**
- * 已经隐藏toastView
- */
-- (void)toastView:(QMUIToastView *)toastView didHideInView:(UIView *)view;
-
-@end
-
 
 typedef NS_ENUM(NSInteger, QMUIToastViewPosition) {
     QMUIToastViewPositionTop,
@@ -68,14 +38,9 @@ typedef NS_ENUM(NSInteger, QMUIToastViewPosition) {
 - (instancetype)initWithView:(UIView *)view NS_DESIGNATED_INITIALIZER;
 
 /**
- * parentView是ToastView初始化的时候穿进去的那个view。
+ * parentView是ToastView初始化的时候传进去的那个view。
  */
 @property(nonatomic, weak, readonly) UIView *parentView;
-
-/**
- * delegate
- */
-@property(nonatomic, weak) id <QMUIToastViewDelegate> delegate;
 
 /**
  * 显示ToastView。
@@ -105,6 +70,12 @@ typedef NS_ENUM(NSInteger, QMUIToastViewPosition) {
  */
 - (void)hideAnimated:(BOOL)animated afterDelay:(NSTimeInterval)delay;
 
+/// @warning 如果使用 [QMUITips showXxx] 系列快捷方法来显示 tips，willShowBlock 将会在 show 之后才被设置，最终并不会被调用。这种场景建议自己在调用 [QMUITips showXxx] 之前执行一段代码，或者不要使用 [QMUITips showXxx] 的方式显示 tips
+@property(nonatomic, copy) void (^willShowBlock)(UIView *showInView, BOOL animated);
+@property(nonatomic, copy) void (^didShowBlock)(UIView *showInView, BOOL animated);
+@property(nonatomic, copy) void (^willHideBlock)(UIView *hideInView, BOOL animated);
+@property(nonatomic, copy) void (^didHideBlock)(UIView *hideInView, BOOL animated);
+
 /**
  * `QMUIToastAnimator`可以让你通过实现一些协议来自定义ToastView显示和隐藏的动画。你可以继承`QMUIToastAnimator`，然后实现`QMUIToastAnimatorDelegate`中的方法，即可实现自定义的动画。如果不赋值，则会使用`QMUIToastAnimator`中的默认动画。
  */
@@ -131,15 +102,15 @@ typedef NS_ENUM(NSInteger, QMUIToastViewPosition) {
  */
 @property(nonatomic, strong, readonly) UIView *maskView;
 
-/**
- * `contentView`下面的view，可以设置其：背景色、圆角、size等一些属性。
+/**s
+ * 承载Toast内容的UIView，可以自定义并赋值给contentView。如果contentView需要跟随ToastView的tintColor变化而变化，可以重写自定义view的`tintColorDidChange`来实现。默认使用`QMUIToastContentView`实现。
  */
-@property(nonatomic, strong) UIView *backgroundView;
+@property(nonatomic, strong) __kindof UIView *contentView;
 
 /**
- * 所有类型的Toast都是通过给contentView赋值来实现的，每一个contentView都可以自己定义subview以及subview的样式和layout，最终作为ToastView的contentView来显示。如果contentView需要跟随ToastView的tintColor变化而变化，可以重写`tintColorDidChange`来实现。
+ * `contentView`下面的黑色背景UIView，默认使用`QMUIToastBackgroundView`实现，可以通过`QMUIToastBackgroundView`的 cornerRadius 和 styleColor 来修改圆角和背景色。
  */
-@property(nonatomic, strong) UIView *contentView;
+@property(nonatomic, strong) __kindof UIView *backgroundView;
 
 
 ///////////////////

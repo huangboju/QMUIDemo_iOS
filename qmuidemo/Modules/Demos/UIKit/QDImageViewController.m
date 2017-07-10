@@ -30,6 +30,7 @@
                                      @"- qmui_grayImage", @"将图片置灰",
                                      @"- qmui_imageWithAlpha:", @"调整图片的alpha值，返回一张新图片",
                                      @"- qmui_imageWithTintColor:", @"更改图片的颜色，只支持按路径来渲染图片",
+                                     @"- qmui_imageWithBlendColor:", @"更改图片的颜色，保持图片内容纹理不变",
                                      @"- qmui_imageWithImageAbove:atPoint:", @"将一张图片叠在当前图片上方的指定位置",
                                      @"- qmui_imageWithSpacingExtensionInsets:", @"拓展当前图片外部边距，拓展的区域填充透明",
                                      @"- qmui_imageWithClippedRect:", @"将图片内指定区域的矩形裁剪出来，返回裁剪出来的区域",
@@ -69,7 +70,7 @@
     self.contentScrollView.scrollsToTop = NO;
     [self.contentView addSubview:self.contentScrollView];
     
-    self.methodNameLabel = [[UILabel alloc] initWithFont:[UIFont fontWithName:@"Menlo" size:16] textColor:UIColorBlue];
+    self.methodNameLabel = [[UILabel alloc] initWithFont:CodeFontMake(16) textColor:[QDThemeManager sharedInstance].currentTheme.themeCodeColor];
     self.methodNameLabel.numberOfLines = 0;
     self.methodNameLabel.lineBreakMode = NSLineBreakByCharWrapping;
     [self.contentScrollView addSubview:self.methodNameLabel];
@@ -83,7 +84,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     QMUITableViewCell *cell = (QMUITableViewCell *)[super tableView:tableView cellForRowAtIndexPath:indexPath];
     cell.textLabel.font = CodeFontMake(14);
-    cell.textLabel.textColor = UIColorBlue;
+    cell.textLabel.textColor = [QDThemeManager sharedInstance].currentTheme.themeCodeColor;
     cell.detailTextLabel.font = UIFontMake(12);
     cell.detailTextLabel.textColor = UIColorGray;
     cell.detailTextLabelEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
@@ -106,6 +107,8 @@
         contentSizeHeight = [self generateExampleViewForImageWithAlpha];
     } else if ([title isEqualToString:@"- qmui_imageWithTintColor:"]) {
         contentSizeHeight = [self generateExampleViewForImageWithTintColor];
+    } else if ([title isEqualToString:@"- qmui_imageWithBlendColor:"]) {
+        contentSizeHeight = [self generateExampleViewForImageWithBlendColor];
     } else if ([title isEqualToString:@"- qmui_imageWithImageAbove:atPoint:"]) {
         contentSizeHeight = [self generateExampleViewForImageWithImageAbove];
     } else if ([title isEqualToString:@"- qmui_imageWithSpacingExtensionInsets:"]) {
@@ -325,6 +328,41 @@
     return minY;
 }
 
+- (CGFloat)generateExampleViewForImageWithBlendColor {
+    CGFloat minY = [self contentViewLayoutStartingMinY];
+    CGFloat contentWidth = [self contentViewLimitWidth];
+    
+    UILabel *originImageLabel = [[UILabel alloc] initWithFont:UIFontMake(14) textColor:UIColorBlack];
+    originImageLabel.text = @"处理前的原图";
+    [originImageLabel sizeToFit];
+    originImageLabel.frame = CGRectSetY(originImageLabel.frame, minY);
+    [self.contentScrollView addSubview:originImageLabel];
+    minY = CGRectGetMaxY(originImageLabel.frame) + 6;
+    
+    UIImageView *originImageView = [[UIImageView alloc] initWithImage:[UIImageMake(@"image0") qmui_imageWithScaleToSize:CGSizeMake(contentWidth, contentWidth)]];
+    originImageView.contentMode = UIViewContentModeScaleAspectFit;
+    originImageView.frame = CGRectSetY(originImageView.frame, minY);
+    [self.contentScrollView addSubview:originImageView];
+    minY = CGRectGetMaxY(originImageView.frame) + 16;
+    
+    UILabel *afterLabel = [[UILabel alloc] init];
+    [afterLabel qmui_setTheSameAppearanceAsLabel:originImageLabel];
+    afterLabel.text = @"将图片换个颜色";
+    [afterLabel sizeToFit];
+    afterLabel.frame = CGRectSetY(afterLabel.frame, minY);
+    [self.contentScrollView addSubview:afterLabel];
+    minY = CGRectGetMaxY(afterLabel.frame) + 6;
+    
+    UIImage *afterImage = [originImageView.image qmui_imageWithBlendColor:[QDCommonUI randomThemeColor]];
+    UIImageView *afterImageView = [[UIImageView alloc] initWithImage:afterImage];
+    afterImageView.contentMode = originImageView.contentMode;
+    afterImageView.frame = CGRectSetY(afterImageView.frame, minY);
+    [self.contentScrollView addSubview:afterImageView];
+    minY = CGRectGetMaxY(afterImageView.frame);
+    
+    return minY;
+}
+
 - (CGFloat)generateExampleViewForImageWithImageAbove {
     CGFloat minY = [self contentViewLayoutStartingMinY];
 
@@ -335,7 +373,7 @@
     [self.contentScrollView addSubview:originImageLabel];
     minY = CGRectGetMaxY(originImageLabel.frame) + 6;
     
-    UIImageView *originImageView = [[UIImageView alloc] initWithImage:[UIImageMake(@"icon_emotion") qmui_imageWithTintColor:UIColorBlue]];
+    UIImageView *originImageView = [[UIImageView alloc] initWithImage:[UIImageMake(@"icon_emotion") qmui_imageWithTintColor:[QDThemeManager sharedInstance].currentTheme.themeTintColor]];
     originImageView.contentMode = UIViewContentModeScaleAspectFit;
     originImageView.frame = CGRectSetY(originImageView.frame, minY);
     [self.contentScrollView addSubview:originImageView];
@@ -814,17 +852,20 @@
     [self.contentScrollView addSubview:titleLabel];
     minY = CGRectGetMaxY(titleLabel.frame) + 6;
     
-    UIImage *ovalImage = [UIImage qmui_imageWithShape:QMUIImageShapeOval size:CGSizeMake(contentWidth / 4, 20) tintColor:UIColorBlue];
-    UIImage *triangleImage = [UIImage qmui_imageWithShape:QMUIImageShapeTriangle size:CGSizeMake(6, 6) tintColor:UIColorBlue];
-    UIImage *disclosureIndicatorImage = [UIImage qmui_imageWithShape:QMUIImageShapeDisclosureIndicator size:CGSizeMake(8, 13) tintColor:UIColorBlue];
-    UIImage *checkmarkImage = [UIImage qmui_imageWithShape:QMUIImageShapeCheckmark size:CGSizeMake(15, 12) tintColor:UIColorBlue];
-    UIImage *navBackImage = [UIImage qmui_imageWithShape:QMUIImageShapeNavBack size:CGSizeMake(12, 20) tintColor:UIColorBlue];
-    UIImage *navCloseImage = [UIImage qmui_imageWithShape:QMUIImageShapeNavClose size:CGSizeMake(16, 16) tintColor:UIColorBlue];
+    UIColor *tintColor = [QDThemeManager sharedInstance].currentTheme.themeTintColor;
+    UIImage *ovalImage = [UIImage qmui_imageWithShape:QMUIImageShapeOval size:CGSizeMake(contentWidth / 4, 20) tintColor:tintColor];
+    UIImage *triangleImage = [UIImage qmui_imageWithShape:QMUIImageShapeTriangle size:CGSizeMake(6, 6) tintColor:tintColor];
+    UIImage *disclosureIndicatorImage = [UIImage qmui_imageWithShape:QMUIImageShapeDisclosureIndicator size:CGSizeMake(8, 13) tintColor:tintColor];
+    UIImage *checkmarkImage = [UIImage qmui_imageWithShape:QMUIImageShapeCheckmark size:CGSizeMake(15, 12) tintColor:tintColor];
+    UIImage *detailButtonImage = [UIImage qmui_imageWithShape:QMUIImageShapeDetailButtonImage size:CGSizeMake(20, 20) tintColor:tintColor];
+    UIImage *navBackImage = [UIImage qmui_imageWithShape:QMUIImageShapeNavBack size:CGSizeMake(12, 20) tintColor:tintColor];
+    UIImage *navCloseImage = [UIImage qmui_imageWithShape:QMUIImageShapeNavClose size:CGSizeMake(16, 16) tintColor:tintColor];
     
     minY = [self generateExampleLabelAndImageViewWithImage:ovalImage shapeName:@"QMUIImageShapeOval" minY:minY];
     minY = [self generateExampleLabelAndImageViewWithImage:triangleImage shapeName:@"QMUIImageShapeTriangle" minY:minY];
     minY = [self generateExampleLabelAndImageViewWithImage:disclosureIndicatorImage shapeName:@"QMUIImageShapeDisclosureIndicator" minY:minY];
     minY = [self generateExampleLabelAndImageViewWithImage:checkmarkImage shapeName:@"QMUIImageShapeCheckmark" minY:minY];
+    minY = [self generateExampleLabelAndImageViewWithImage:detailButtonImage shapeName:@"QMUIImageShapeDetailButtonImage" minY:minY];
     minY = [self generateExampleLabelAndImageViewWithImage:navBackImage shapeName:@"QMUIImageShapeNavBack" minY:minY];
     minY = [self generateExampleLabelAndImageViewWithImage:navCloseImage shapeName:@"QMUIImageShapeNavClose" minY:minY];
     

@@ -7,9 +7,7 @@
 //
 
 #import "UIView+QMUI.h"
-#import "QMUICommonDefines.h"
-#import "QMUIConfigurationMacros.h"
-#import "QMUIHelper.h"
+#import "QMUICore.h"
 #import "CALayer+QMUI.h"
 #import "UIColor+QMUI.h"
 #import "NSObject+QMUI.h"
@@ -26,6 +24,10 @@
 
 
 @implementation UIView (QMUI)
+
+- (instancetype)qmui_initWithSize:(CGSize)size {
+    return [self initWithFrame:CGRectMakeWithSize(size)];
+}
 
 - (void)qmui_setWidth:(CGFloat)width height:(CGFloat)height {
     CGRect frame = self.frame;

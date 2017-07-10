@@ -12,7 +12,7 @@
 
 @property(nonatomic, strong) UILabel *fontPointSizeLabel;
 @property(nonatomic, strong) UILabel *lineHeightLabel;
-@property(nonatomic, strong) UISlider *fontPointSizeSlider;
+@property(nonatomic, strong) QMUISlider *fontPointSizeSlider;
 @property(nonatomic, strong) UILabel *exampleLabel;
 
 @property(nonatomic, assign) NSInteger oldFontPointSize;
@@ -38,8 +38,13 @@
     [self.lineHeightLabel qmui_calculateHeightAfterSetAppearance];
     [self.view addSubview:self.lineHeightLabel];
     
-    self.fontPointSizeSlider = [[UISlider alloc] init];
-    self.fontPointSizeSlider.tintColor = UIColorBlue;
+    self.fontPointSizeSlider = [[QMUISlider alloc] init];
+    self.fontPointSizeSlider.tintColor = [QDThemeManager sharedInstance].currentTheme.themeTintColor;
+    self.fontPointSizeSlider.thumbSize = CGSizeMake(16, 16);
+    self.fontPointSizeSlider.thumbColor = self.fontPointSizeSlider.tintColor;
+    self.fontPointSizeSlider.thumbShadowColor = [self.fontPointSizeSlider.tintColor colorWithAlphaComponent:.3];
+    self.fontPointSizeSlider.thumbShadowOffset = CGSizeMake(0, 2);
+    self.fontPointSizeSlider.thumbShadowRadius = 3;
     self.fontPointSizeSlider.minimumValue = 8;
     self.fontPointSizeSlider.maximumValue = 50;
     self.fontPointSizeSlider.value = self.oldFontPointSize;
@@ -48,7 +53,7 @@
     [self.view addSubview:self.fontPointSizeSlider];
     
     self.exampleLabel = [[UILabel alloc] init];
-    self.exampleLabel.backgroundColor = UIColorBlue;
+    self.exampleLabel.backgroundColor = [QDThemeManager sharedInstance].currentTheme.themeTintColor;
     self.exampleLabel.textColor = UIColorWhite;
     self.exampleLabel.text = @"字体大小与其对应的默认行高";
     [self.view addSubview:self.exampleLabel];

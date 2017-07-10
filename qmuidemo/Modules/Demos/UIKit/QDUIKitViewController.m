@@ -22,6 +22,9 @@
 #import "QDCollectionListViewController.h"
 #import "QDAboutViewController.h"
 #import "QDObjectViewController.h"
+#import "QDFontViewController.h"
+#import "QDSliderViewController.h"
+#import "QDOrientationViewController.h"
 
 @implementation QDUIKitViewController
 
@@ -31,14 +34,17 @@
                        @"QMUILabel", UIImageMake(@"icon_grid_label"),
                        @"QMUITextView", UIImageMake(@"icon_grid_textView"),
                        @"QMUITextField", UIImageMake(@"icon_grid_textField"),
+                       @"QMUISlider", UIImageMake(@"icon_grid_slider"),
                        @"QMUIAlertController", UIImageMake(@"icon_grid_alert"),
                        @"QMUITableViewCell", UIImageMake(@"icon_grid_cell"),
                        @"QMUICollectionViewLayout", UIImageMake(@"icon_grid_collection"),
                        @"QMUISearchController", UIImageMake(@"icon_grid_search"),
+                       @"ViewController Orientation", UIImageMake(@"icon_grid_orientation"),
                        @"UINavigationController+QMUI", UIImageMake(@"icon_grid_navigation"),
                        @"UITabBarItem+QMUI", UIImageMake(@"icon_grid_tabBarItem"),
                        @"UIColor+QMUI", UIImageMake(@"icon_grid_color"),
                        @"UIImage+QMUI", UIImageMake(@"icon_grid_image"),
+                       @"UIFont+QMUI", UIImageMake(@"icon_grid_font"),
                        @"UIView+QMUI", UIImageMake(@"icon_grid_view"),
                        @"NSObject+QMUI", UIImageMake(@"icon_grid_nsobject"),
                        nil];
@@ -67,6 +73,9 @@
     else if ([title isEqualToString:@"QMUITextField"]) {
         viewController = [[QDTextFieldViewController alloc] init];
     }
+    else if ([title isEqualToString:@"QMUISlider"]) {
+        viewController = [[QDSliderViewController alloc] init];
+    }
     else if ([title isEqualToString:@"QMUITableViewCell"]) {
         viewController = [[QDTableViewCellViewController alloc] init];
     }
@@ -82,11 +91,17 @@
     else if ([title isEqualToString:@"QMUIAlertController"]) {
         viewController = [[QDAlertController alloc] init];
     }
+    else if ([title isEqualToString:@"ViewController Orientation"]) {
+        viewController = [[QDOrientationViewController alloc] init];
+    }
     else if ([title isEqualToString:@"UINavigationController+QMUI"]) {
         viewController = [[QDNavigationListViewController alloc] init];
     }
     else if ([title isEqualToString:@"UITabBarItem+QMUI"]) {
         viewController = [[QDTabBarItemViewController alloc] init];
+    }
+    else if ([title isEqualToString:@"UIFont+QMUI"]) {
+        viewController = [[QDFontViewController alloc] init];
     }
     else if ([title isEqualToString:@"UIView+QMUI"]) {
         viewController = [[QDUIViewQMUIViewController alloc] init];
